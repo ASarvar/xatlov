@@ -42,6 +42,43 @@ npm run dev
 
 ---
 
+## Qanday tekshiriladi
+
+Avtomatik tekshiruv (14 ta holat: auth, validatsiya, upsert, PATCH, bulk hisobi,
+soft delete, UI sahifa):
+
+```bash
+npm run smoke
+```
+
+Qo'lda tekshirish:
+
+```bash
+docker compose ps                       # ikkala konteyner "healthy" bo'lishi kerak
+curl http://localhost:3000/api/health   # {"status":"ok","db":true}
+docker compose logs -f app              # jonli loglar
+```
+
+Bazaga bevosita qarash:
+
+```bash
+docker compose exec db psql -U xatlov -d xatlov -c "SELECT id, tin, org_name, state, updated_at FROM organisations ORDER BY id DESC LIMIT 10;"
+docker compose exec db psql -U xatlov -d xatlov -c "SELECT * FROM sync_runs ORDER BY id DESC LIMIT 5;"
+```
+
+Namuna ma'lumot yuklash va natijani UI da ko'rish:
+
+```bash
+npm run import data/sample-organisations.json
+```
+
+> **Muhim:** `.env` dagi `BASIC_PASS` yoki baza sozlamalari o'zgartirilsa, konteyner
+> eski qiymatlar bilan ishlashda davom etadi. Qayta qo'llash uchun: `docker compose up -d`.
+
+Bazani butunlay tozalash: `docker compose down -v` (keyingi ko'tarilishda sxema qaytadan yaratiladi).
+
+---
+
 ## Ma'lumotlar modeli
 
 `organisations` — davlat muassasasi kartochkasi. Tabiiy kalit — **STIR (`tin`)**,
@@ -122,7 +159,7 @@ Javob:
 Fayldan import (avtomatik bo'laklarga bo'lib yuboradi):
 
 ```bash
-node --env-file-if-exists=.env scripts/import-organisations.mjs ./data/organisations.json
+npm run import ./data/organisations.json
 ```
 
 ### Xatolar formati

@@ -1,0 +1,125 @@
+### Xatlov API — 1-bosqich (Davlat muassasalari ro'yxati)
+### VS Code "REST Client" yoki JetBrains HTTP Client bilan ishlaydi
+
+@base = http://localhost:3000
+@auth = Basic eGF0bG92OmNoYW5nZS1tZQ==
+# ^ base64("xatlov:change-me") — BASIC_USER/BASIC_PASS o'zgarsa qayta hisoblang
+
+### Holat (auth talab qilinmaydi)
+GET {{base}}/api/health
+
+### Ro'yxat: filtr + sahifalash
+GET {{base}}/api/organisations?page=1&limit=20&q=hokimligi&state=1&sort=updated_at&order=desc
+Authorization: {{auth}}
+
+### Bitta tashkilot (id bo'yicha)
+GET {{base}}/api/organisations/1
+Authorization: {{auth}}
+
+### Bitta tashkilot (STIR bo'yicha)
+GET {{base}}/api/organisations/by-tin/201122334
+Authorization: {{auth}}
+
+### Qo'shish (STIR mavjud bo'lsa — yangilanadi)
+POST {{base}}/api/organisations
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "typeid": 1,
+  "source_id": "DM-001",
+  "org_name": "Toshkent shahar hokimligi",
+  "region_id": 26,
+  "district_id": 263,
+  "tin": "201122334",
+  "state": 1,
+  "soato": "1726269"
+}
+
+### Qat'iy qo'shish: dublikat bo'lsa 409 qaytadi
+POST {{base}}/api/organisations?mode=insert
+Authorization: {{auth}}
+Content-Type: application/json
+
+{ "org_name": "Yangi tashkilot", "tin": "111222333" }
+
+### Qisman yangilash (id bo'yicha)
+PATCH {{base}}/api/organisations/1
+Authorization: {{auth}}
+Content-Type: application/json
+
+{ "org_name": "Toshkent shahar hokimligi apparati", "state": 1 }
+
+### To'liq yangilash (id bo'yicha)
+PUT {{base}}/api/organisations/1
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "typeid": 1,
+  "source_id": "DM-001",
+  "org_name": "Toshkent shahar hokimligi",
+  "region_id": 26,
+  "district_id": 263,
+  "tin": "201122334",
+  "state": 1,
+  "soato": "1726269"
+}
+
+### STIR bo'yicha upsert — manba tizimi uchun asosiy nuqta
+PUT {{base}}/api/organisations/by-tin/201122334
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "typeid": 1,
+  "source_id": "DM-001",
+  "org_name": "Toshkent shahar hokimligi",
+  "region_id": 26,
+  "district_id": 263,
+  "soato": "1726269"
+}
+
+### STIR bo'yicha qisman yangilash
+PATCH {{base}}/api/organisations/by-tin/201122334
+Authorization: {{auth}}
+Content-Type: application/json
+
+{ "state": 0 }
+
+### Nofaol qilish (yozuv o'chirilmaydi, state = 0)
+DELETE {{base}}/api/organisations/1
+Authorization: {{auth}}
+
+### Ommaviy yuklash (asosiy import nuqtasi)
+POST {{base}}/api/organisations/bulk
+Authorization: {{auth}}
+Content-Type: application/json
+
+{
+  "source": "davlat-mulki",
+  "items": [
+    {
+      "typeid": 1,
+      "source_id": "DM-001",
+      "org_name": "Toshkent shahar hokimligi",
+      "region_id": 26,
+      "district_id": 263,
+      "tin": "201122334",
+      "soato": "1726269"
+    },
+    {
+      "typeid": 2,
+      "source_id": "DM-002",
+      "org_name": "Chilonzor tumani hokimligi",
+      "region_id": 26,
+      "district_id": 264,
+      "tin": "302233445",
+      "soato": "1726262"
+    }
+  ]
+}
+
+### Yuklash sessiyalari tarixi
+GET {{base}}/api/sync-runs?limit=20
+Authorization: {{auth}}

@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: xatlov-db
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-Asia/Tashkent}
+      POSTGRES_USER: ${POSTGRES_USER:-xatlov}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xatlov}
+      POSTGRES_DB: ${POSTGRES_DB:-xatlov}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Faqat birinchi ishga tushishda avtomatik bajariladi
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xatlov} -d ${POSTGRES_DB:-xatlov}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xatlov-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-Asia/Tashkent}
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-xatlov}:${POSTGRES_PASSWORD:-xatlov}@db:5432/${POSTGRES_DB:-xatlov}
+      BASIC_USER: ${BASIC_USER:-xatlov}
+      BASIC_PASS: ${BASIC_PASS:-change-me}
+    ports:
+      - "${PORT:-3000}:3000"
+
+volumes:
+  db-data:

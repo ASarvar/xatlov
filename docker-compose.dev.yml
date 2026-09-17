@@ -1,0 +1,19 @@
+# Ishlab chiqish rejimi (hot reload):
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Image build qilinmaydi — kod bind-mount orqali konteynerga ulanadi,
+# bog'liqliklar konteyner ichidagi anonim volume'ga o'rnatiladi.
+services:
+  app:
+    build: !reset null
+    image: node:22-alpine
+    user: root
+    working_dir: /app
+    command: sh -c "npm install --no-audit --no-fund && npm run db:migrate && npm run dev"
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next

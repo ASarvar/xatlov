@@ -1,0 +1,146 @@
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --border: #dde3ec;
+  --text: #16243a;
+  --muted: #6b7a90;
+  --brand: #2e5a97;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0e1520;
+    --surface: #151f2e;
+    --border: #253346;
+    --text: #e6ecf5;
+    --muted: #93a3b8;
+    --brand: #6e9ede;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.site-header {
+  background: var(--brand);
+  color: #fff;
+  padding: 12px 0;
+}
+
+.site-header .muted {
+  color: #dbe6f5;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.card .value {
+  font-size: 26px;
+  font-weight: 650;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+input[type='search'],
+input[type='text'] {
+  flex: 1 1 240px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+button,
+.btn {
+  padding: 9px 16px;
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn.secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+th {
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface));
+  font-weight: 600;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.pager {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 14px;
+}
+
+code {
+  background: color-mix(in srgb, var(--brand) 12%, transparent);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 13px;
+}

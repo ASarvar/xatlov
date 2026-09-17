@@ -1,0 +1,7 @@
+{
+  "items": [
+    { "typeid": 1, "source_id": "DM-1001", "org_name": "Andijon viloyati hokimligi", "region_id": 3, "district_id": 30, "tin": "200111222", "soato": "1703401" },
+    { "typeid": 2, "source_id": "DM-1002", "org_name": "Buxoro shahar xalq ta'limi bo'limi", "region_id": 6, "district_id": 61, "tin": "200222333", "soato": "1706401" },
+    { "typeid": 3, "source_id": "DM-1003", "org_name": "Samarqand viloyat sog'liqni saqlash boshqarmasi", "region_id": 18, "district_id": 180, "tin": "200333444", "soato": "1718401" }
+  ]
+}

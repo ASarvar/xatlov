@@ -138,7 +138,7 @@ Tayyor. Ilova manzili: http://127.0.0.1:9091
 curl http://127.0.0.1:9091/api/health
 ```
 
-To'liq tekshiruv — 14 ta holat (auth, validatsiya, upsert, PATCH, bulk hisobi, soft
+To'liq tekshiruv — 16 ta holat (auth, validatsiya, upsert, PATCH, bulk hisobi, soft
 delete, UI sahifa). Konteyner ichida ilova 3000-portda bo'lgani uchun manzil `127.0.0.1:3000`:
 
 ```bash

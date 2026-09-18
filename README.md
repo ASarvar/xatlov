@@ -63,7 +63,7 @@ ma'lumot ko'chirish, yangilash va rollback, zaxira nusxa, nosozliklarni bartaraf
 
 ## Qanday tekshiriladi
 
-Avtomatik tekshiruv — 14 ta holat (auth, validatsiya, upsert, PATCH, bulk hisobi,
+Avtomatik tekshiruv — 16 ta holat (auth, validatsiya, upsert, PATCH, bulk hisobi,
 soft delete, UI sahifa):
 
 ```bash
@@ -191,7 +191,7 @@ curl -u LOGIN:PAROL -H 'content-type: application/json' -d '{"source":"davlat-mu
 | Buyruq | Vazifasi |
 |---|---|
 | `npm run db:migrate` | `db/init/*.sql` ni qo'llaydi (idempotent) |
-| `npm run smoke` | ishga tushgan ilovani 14 ta holat bo'yicha tekshiradi |
+| `npm run smoke` | ishga tushgan ilovani 16 ta holat bo'yicha tekshiradi |
 | `npm run import FAYL.json` | JSON fayldan ommaviy yuklaydi (500 talab bo'lib) |
 | `npm run import:legacy` | eski (legacy) bazadagi `organisations` jadvalini ko'chiradi |
 | `./scripts/deploy.sh` | serverda: pull → build → ko'tarish → migratsiya → holat |

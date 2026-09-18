@@ -22,15 +22,26 @@ export default async function HomePage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const q = typeof sp.q === 'string' ? sp.q : undefined;
-  const page = typeof sp.page === 'string' ? sp.page : '1';
+  // Bo'sh qidiruv maydoni ham `?q=` ko'rinishida keladi — u filtr hisoblanmaydi
+  const q = typeof sp.q === 'string' && sp.q.trim() ? sp.q.trim() : undefined;
+
+  // Noto'g'ri parametr (masalan ?page=abc) sahifani buzmasin — standart qiymatlarga qaytamiz
+  const parsed = listQuerySchema.safeParse({
+    q,
+    page: sp.page,
+    limit: '20',
+    sort: 'id',
+    order: 'desc',
+  });
+  const params = parsed.success
+    ? parsed.data
+    : listQuerySchema.parse({ q, limit: '20', sort: 'id', order: 'desc' });
 
   let stats: Awaited<ReturnType<typeof getStats>> | null = null;
   let result: Awaited<ReturnType<typeof listOrganisations>> | null = null;
   let dbError: string | null = null;
 
   try {
-    const params = listQuerySchema.parse({ q, page, limit: '20', sort: 'id', order: 'desc' });
     [stats, result] = await Promise.all([getStats(), listOrganisations(params)]);
   } catch (err) {
     dbError = err instanceof Error ? err.message : String(err);
@@ -42,8 +53,9 @@ export default async function HomePage({
         <h2>Bazaga ulanib bo&apos;lmadi</h2>
         <p className="muted">{dbError}</p>
         <p>
-          <code>docker compose up -d</code> buyrug&apos;i bilan bazani ishga tushiring va{' '}
-          <code>DATABASE_URL</code> ni tekshiring.
+          Baza konteyneri ishlayotganini (<code>docker compose ps</code>) va{' '}
+          <code>.env</code> dagi <code>POSTGRES_*</code> sozlamalarini tekshiring.
+          Sozlamalar o&apos;zgargan bo&apos;lsa, konteynerni qayta qo&apos;llang.
         </p>
       </section>
     );

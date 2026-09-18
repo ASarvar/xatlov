@@ -27,17 +27,24 @@ export const organisationBulkSchema = z.object({
   items: z.array(organisationInputSchema).min(1, "items bo'sh bo'lmasligi kerak").max(5000),
 });
 
+/**
+ * Bo'sh satrni "berilmagan" deb hisoblaydi.
+ * HTML forma bo'sh maydonni ham yuboradi (`?q=`), bu esa filtr emas.
+ */
+const empty = (value: unknown) =>
+  typeof value === 'string' && value.trim() === '' ? undefined : value;
+
 export const listQuerySchema = z.object({
-  page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(500).default(50),
-  q: z.string().trim().min(1).optional(),
-  tin: z.string().trim().optional(),
-  region_id: z.coerce.number().int().optional(),
-  district_id: z.coerce.number().int().optional(),
-  typeid: z.coerce.number().int().optional(),
-  state: z.coerce.number().int().optional(),
-  sort: z.enum(['created_at', 'updated_at', 'org_name', 'id']).default('id'),
-  order: z.enum(['asc', 'desc']).default('desc'),
+  page: z.preprocess(empty, z.coerce.number().int().min(1).default(1)),
+  limit: z.preprocess(empty, z.coerce.number().int().min(1).max(500).default(50)),
+  q: z.preprocess(empty, z.string().trim().min(1).optional()),
+  tin: z.preprocess(empty, z.string().trim().optional()),
+  region_id: z.preprocess(empty, z.coerce.number().int().optional()),
+  district_id: z.preprocess(empty, z.coerce.number().int().optional()),
+  typeid: z.preprocess(empty, z.coerce.number().int().optional()),
+  state: z.preprocess(empty, z.coerce.number().int().optional()),
+  sort: z.preprocess(empty, z.enum(['created_at', 'updated_at', 'org_name', 'id']).default('id')),
+  order: z.preprocess(empty, z.enum(['asc', 'desc']).default('desc')),
 });
 
 export type OrganisationInput = z.infer<typeof organisationInputSchema>;

@@ -138,11 +138,19 @@ check(
   `topildi=${search.body?.items?.length}`,
 );
 
-// 12. Yuklash tarixi
+// 12. Bo'sh filtrlar — HTML forma bo'sh maydonni ham yuboradi (?q=&page=)
+const emptyFilters = await call('GET', '/api/organisations?q=&tin=&page=&region_id=');
+check(
+  "bo'sh filtrlar (?q=&tin=) xato bermaydi",
+  emptyFilters.status === 200 && Array.isArray(emptyFilters.body?.items),
+  `status=${emptyFilters.status}`,
+);
+
+// 13. Yuklash tarixi
 const runs = await call('GET', '/api/sync-runs?limit=1');
 check('GET /sync-runs: tarix yozilmoqda', runs.status === 200 && runs.body?.items?.length > 0);
 
-// 13. Nofaol qilish (yozuv o'chirilmaydi)
+// 14. Nofaol qilish (yozuv o'chirilmaydi)
 const removed = await call('DELETE', `/api/organisations/${id}`);
 check(
   'DELETE /organisations/:id: state=0 bo\'ldi, yozuv saqlanib qoldi',
@@ -150,9 +158,18 @@ check(
   `status=${removed.status}`,
 );
 
-// 14. UI sahifa
+// 15. UI sahifa
 const page = await fetch(base);
 check('UI: bosh sahifa 200 qaytardi', page.status === 200, `status=${page.status}`);
+
+// 16. Bo'sh qidiruv bilan yuborilgan forma sahifani buzmasligi kerak
+const emptySearchPage = await fetch(`${base}/?q=&page=`);
+const emptySearchHtml = await emptySearchPage.text();
+check(
+  "UI: bo'sh qidiruv sahifani buzmadi",
+  emptySearchPage.status === 200 && !emptySearchHtml.includes('Bazaga ulanib bo'),
+  `status=${emptySearchPage.status}`,
+);
 
 // Tozalash: ikkinchi test yozuvini ham nofaol qilamiz
 const b = await call('GET', `/api/organisations/by-tin/${TIN_B}`);

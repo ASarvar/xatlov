@@ -25,6 +25,13 @@ set -a; . ./.env; set +a
 APP_PORT="${APP_PORT:-9091}"
 BIND_HOST="${BIND_HOST:-127.0.0.1}"
 
+# Baza alohida diskda saqlanadigan bo'lsa (.env dagi DB_DATA_DIR)
+if [ -n "${DB_DATA_DIR:-}" ]; then
+  mkdir -p "$DB_DATA_DIR"
+  COMPOSE="$COMPOSE -f docker-compose.hdd.yml"
+  echo "Baza katalogi: $DB_DATA_DIR"
+fi
+
 for var in POSTGRES_PASSWORD BASIC_PASS; do
   value="${!var:-}"
   if [ -z "$value" ] || [ "$value" = "change-me" ] || [[ "$value" == ALMASHTIRING* ]]; then

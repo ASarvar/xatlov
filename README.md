@@ -45,7 +45,7 @@ npm run dev
 Ilova serverda **9091-portda** ishlaydi:
 
 ```bash
-git clone <repo-url> /opt/xatlov && cd /opt/xatlov
+git clone https://github.com/ASarvar/xatlov.git /mnt/hdd1/xatlov && cd /mnt/hdd1/xatlov
 cp .env.production.example .env    # parollarni to'ldiring
 ./scripts/deploy.sh
 ```

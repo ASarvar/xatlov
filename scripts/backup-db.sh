@@ -17,6 +17,7 @@ KEEP_DAYS="${BACKUP_KEEP_DAYS:-30}"
 [ -f .env ] && { set -a; . ./.env; set +a; }
 DB_USER="${POSTGRES_USER:-xatlov}"
 DB_NAME="${POSTGRES_DB:-xatlov}"
+[ -n "${DB_DATA_DIR:-}" ] && COMPOSE="$COMPOSE -f docker-compose.hdd.yml"
 
 mkdir -p "$OUT_DIR"
 FILE="$OUT_DIR/xatlov-$(date +%Y%m%d-%H%M).sql.gz"

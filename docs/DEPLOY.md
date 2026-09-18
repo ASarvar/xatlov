@@ -27,11 +27,29 @@ sudo systemctl enable --now docker
 
 ## 2. Kodni serverga olish
 
+Loyiha `/mnt/hdd1/xatlov` katalogida turadi:
+
 ```bash
-sudo mkdir -p /opt/xatlov && sudo chown $USER:$USER /opt/xatlov
-git clone <repo-url> /opt/xatlov
-cd /opt/xatlov
+sudo mkdir -p /mnt/hdd1/xatlov
+sudo chown $USER:$USER /mnt/hdd1/xatlov
+git clone https://github.com/ASarvar/xatlov.git /mnt/hdd1/xatlov
+cd /mnt/hdd1/xatlov
 ```
+
+> Katalog bo'sh bo'lishi kerak. Agar `git clone` "directory not empty" desa:
+> `git init && git remote add origin https://github.com/ASarvar/xatlov.git && git fetch && git checkout -f main`
+
+**Diqqat:** kod `/mnt/hdd1/xatlov` da bo'lsa ham, baza fayllari va image'lar sukut bo'yicha
+`/var/lib/docker` da, ya'ni tizim diskida saqlanadi. Baza ham `/mnt/hdd1` da yotishi kerak
+bo'lsa, `.env` ga quyidagini yozing (baza **birinchi marta yaratilishidan oldin**):
+
+```
+DB_DATA_DIR=/mnt/hdd1/xatlov-data/postgres
+```
+
+`deploy.sh` buni ko'rsa, katalogni yaratadi va `docker-compose.hdd.yml` ni avtomatik
+qo'shadi. Ishlab turgan bazani ko'chirish kerak bo'lsa: `./scripts/backup-db.sh` →
+`DB_DATA_DIR` ni yozish → `docker compose ... down -v` → `./scripts/deploy.sh` → zaxirani tiklash.
 
 ## 3. Sozlamalar (.env)
 
@@ -105,7 +123,7 @@ sudo ufw allow 9091/tcp
 ## 6. Yangilash
 
 ```bash
-cd /opt/xatlov
+cd /mnt/hdd1/xatlov
 ./scripts/deploy.sh
 ```
 
@@ -132,7 +150,7 @@ Har kuni soat 02:00 da avtomatik (cron):
 
 ```bash
 crontab -e
-# 0 2 * * * cd /opt/xatlov && ./scripts/backup-db.sh >> /var/log/xatlov-backup.log 2>&1
+# 0 2 * * * cd /mnt/hdd1/xatlov && ./scripts/backup-db.sh >> /var/log/xatlov-backup.log 2>&1
 ```
 
 Tiklash:

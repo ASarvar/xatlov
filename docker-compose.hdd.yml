@@ -1,0 +1,17 @@
+# Baza ma'lumotlarini alohida diskda saqlash uchun (masalan /mnt/hdd1).
+#
+# Sukut bo'yicha Docker volume'i /var/lib/docker da yotadi. Agar tizim diski kichik
+# bo'lsa, .env ga DB_DATA_DIR ni yozing — deploy.sh bu faylni avtomatik qo'shadi:
+#
+#   DB_DATA_DIR=/mnt/hdd1/xatlov-data/postgres
+#
+# Diqqat: bu sozlamani BAZA birinchi marta yaratilishidan OLDIN qo'ying. Ishlab turgan
+# bazani ko'chirish uchun: zaxira oling (scripts/backup-db.sh), DB_DATA_DIR ni yozing,
+# `docker compose down -v` qiling, qayta deploy qiling va zaxirani tiklang.
+volumes:
+  db-data: !override
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DB_DATA_DIR:?DB_DATA_DIR .env da belgilanishi kerak}

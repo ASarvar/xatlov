@@ -40,6 +40,19 @@ npm run db:migrate
 npm run dev
 ```
 
+### Serverda (production)
+
+Ilova serverda **9091-portda** ishlaydi:
+
+```bash
+git clone <repo-url> /opt/xatlov && cd /opt/xatlov
+cp .env.production.example .env    # parollarni to'ldiring
+./scripts/deploy.sh
+```
+
+To'liq yo'riqnoma: [`docs/DEPLOY.md`](docs/DEPLOY.md) — nginx + HTTPS, yangilash,
+rollback, zaxira nusxa va kundalik buyruqlar.
+
 ---
 
 ## Qanday tekshiriladi
@@ -206,7 +219,9 @@ src/
     organisations.ts   SQL qatlami (upsert, diff, bulk)
     http.ts            JSON javoblar va xatolarni qayta ishlash
 db/init/*.sql          sxema (idempotent)
-scripts/               migratsiya va import skriptlari
+scripts/               migratsiya, import, smoke-test, deploy, backup
+deploy/                nginx namunasi
+docs/                  DEPLOY.md, api.http
 ```
 
 ---

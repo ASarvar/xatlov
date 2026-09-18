@@ -1,0 +1,48 @@
+# Xatlov — nginx reverse proxy namunasi.
+#
+# Serverga qo'yish:
+#   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/xatlov
+#   sudo ln -s /etc/nginx/sites-available/xatlov /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# HTTPS uchun:  sudo certbot --nginx -d xatlov.example.uz
+# (certbot quyidagi blokni avtomatik 443 ga ko'chiradi va sertifikat qo'shadi)
+
+upstream xatlov_app {
+    server 127.0.0.1:9091;
+    keepalive 32;
+}
+
+server {
+    listen 80;
+    server_name xatlov.example.uz;   # <-- o'z domeningiz
+
+    # Ommaviy yuklash (bulk) katta JSON yuborishi mumkin
+    client_max_body_size 32m;
+
+    access_log /var/log/nginx/xatlov-access.log;
+    error_log  /var/log/nginx/xatlov-error.log;
+
+    location / {
+        proxy_pass http://xatlov_app;
+        proxy_http_version 1.1;
+
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection        "";
+
+        # Katta importlar uzoq davom etishi mumkin
+        proxy_connect_timeout 10s;
+        proxy_send_timeout    300s;
+        proxy_read_timeout    300s;
+    }
+
+    # Statik fayllar uzoq keshlanadi
+    location /_next/static/ {
+        proxy_pass http://xatlov_app;
+        proxy_cache_valid 200 30d;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}

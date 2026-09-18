@@ -7,12 +7,17 @@ Texnologiyalar: Next.js 16 (App Router, TypeScript) · PostgreSQL 17 · Docker.
 
 ---
 
-## Tez boshlash (Docker)
+## Tez boshlash (Docker) — **lokal ishlab chiqish uchun**
 
 ```bash
 cp .env.example .env
 docker compose up -d --build
 ```
+
+> Serverda bu buyruq ishlatilmaydi: u bazaning 5432-portini hostga chiqaradi va
+> serverda allaqachon PostgreSQL ishlayotgan bo'lsa to'qnashadi. Serverda faqat
+> `./scripts/deploy.sh` (u `docker-compose.prod.yml` ni qo'shadi va baza portini
+> umuman ochmaydi) — [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 - Ilova: http://localhost:3000
 - Holat: http://localhost:3000/api/health

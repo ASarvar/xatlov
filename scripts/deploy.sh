@@ -25,6 +25,18 @@ set -a; . ./.env; set +a
 APP_PORT="${APP_PORT:-9091}"
 BIND_HOST="${BIND_HOST:-127.0.0.1}"
 
+# Port band emasligini oldindan tekshiramiz (o'zimizning konteyner bo'lsa — muammo yo'q)
+if command -v ss >/dev/null 2>&1; then
+  if ss -lnt | awk '{print $4}' | grep -qE "[:.]${APP_PORT}$"; then
+    if [ -z "$(docker ps -q --filter name=xatlov-app --filter publish="${APP_PORT}")" ]; then
+      echo "XATO: ${APP_PORT} porti boshqa jarayon tomonidan band:"
+      ss -lntp | grep -E "[:.]${APP_PORT}[[:space:]]" || true
+      echo ".env dagi APP_PORT ni bo'sh portga almashtiring yoki o'sha jarayonni to'xtating."
+      exit 1
+    fi
+  fi
+fi
+
 # Baza alohida diskda saqlanadigan bo'lsa (.env dagi DB_DATA_DIR)
 if [ -n "${DB_DATA_DIR:-}" ]; then
   mkdir -p "$DB_DATA_DIR"

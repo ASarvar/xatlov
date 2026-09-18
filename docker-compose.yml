@@ -18,7 +18,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-xatlov} -d ${POSTGRES_DB:-xatlov}"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 12
+      # Birinchi ishga tushishda initdb sekin disklarda bir necha daqiqa olishi mumkin
+      start_period: 180s
 
   app:
     build:

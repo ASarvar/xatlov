@@ -49,7 +49,17 @@ log "Image yig'ilmoqda"
 $COMPOSE build
 
 log "Konteynerlar ishga tushirilmoqda"
-$COMPOSE up -d
+# --wait-timeout: baza ko'tarilmasa cheksiz kutib qolmaslik uchun
+if ! $COMPOSE up -d --wait --wait-timeout "${UP_TIMEOUT:-420}"; then
+  echo
+  echo "XATO: konteynerlar ${UP_TIMEOUT:-420}s ichida tayyor bo'lmadi."
+  $COMPOSE ps
+  echo "--- baza loglari ---"
+  $COMPOSE logs --tail 60 db
+  echo "--- ilova loglari ---"
+  $COMPOSE logs --tail 60 app
+  exit 1
+fi
 
 log "Ilova tayyor bo'lishi kutilmoqda"
 ready=0

@@ -8,6 +8,9 @@
  *   LEGACY_DATABASE_URL=postgresql://user:parol@127.0.0.1:5432/eski_baza \
  *   node --env-file-if-exists=.env scripts/import-from-legacy.mjs [http://127.0.0.1:9091]
  *
+ * Parolda `/`, `+` yoki `=` bo'lsa, URL o'rniga alohida o'zgaruvchilar:
+ *   LEGACY_PGHOST, LEGACY_PGPORT, LEGACY_PGUSER, LEGACY_PGPASSWORD, LEGACY_PGDATABASE
+ *
  * Qo'shimcha sozlamalar:
  *   LEGACY_TABLE      — jadval nomi (default: organisations)
  *   IMPORT_CHUNK_SIZE — bir so'rovdagi yozuvlar soni (default: 500)
@@ -15,16 +18,31 @@
  */
 import pg from 'pg';
 
+/** Ulanish sozlamalari: URL yoki alohida o'zgaruvchilar. */
+function connectionConfig(prefix = '') {
+  const url = process.env[`${prefix}DATABASE_URL`];
+  if (url) return { connectionString: url };
+
+  const host = process.env[`${prefix}PGHOST`] ?? process.env[`${prefix}POSTGRES_HOST`];
+  const user = process.env[`${prefix}PGUSER`] ?? process.env[`${prefix}POSTGRES_USER`];
+  const database = process.env[`${prefix}PGDATABASE`] ?? process.env[`${prefix}POSTGRES_DB`];
+  const password = process.env[`${prefix}PGPASSWORD`] ?? process.env[`${prefix}POSTGRES_PASSWORD`];
+
+  if (!host || !user || !database) return null;
+  return { host, port: Number(process.env[`${prefix}PGPORT`] ?? 5432), user, password, database };
+}
+
 const base = process.argv[2] ?? process.env.API_BASE_URL ?? 'http://127.0.0.1:9091';
-const legacyUrl = process.env.LEGACY_DATABASE_URL;
+const legacyConfig = connectionConfig('LEGACY_');
 const table = process.env.LEGACY_TABLE ?? 'organisations';
 const chunkSize = Number(process.env.IMPORT_CHUNK_SIZE ?? 500);
 const dryRun = process.env.DRY_RUN === '1';
 
-if (!legacyUrl) {
-  console.error('XATO: LEGACY_DATABASE_URL belgilanmagan.');
+if (!legacyConfig) {
+  console.error('XATO: eski baza sozlamalari belgilanmagan.');
   console.error('Misol: LEGACY_DATABASE_URL=postgresql://user:parol@127.0.0.1:5432/eski_baza \\');
   console.error('       node scripts/import-from-legacy.mjs http://127.0.0.1:9091');
+  console.error("Parolda / + = bo'lsa: LEGACY_PGHOST, LEGACY_PGUSER, LEGACY_PGPASSWORD, LEGACY_PGDATABASE");
   process.exit(1);
 }
 
@@ -32,7 +50,7 @@ const auth = `Basic ${Buffer.from(
   `${process.env.BASIC_USER ?? 'xatlov'}:${process.env.BASIC_PASS ?? 'change-me'}`,
 ).toString('base64')}`;
 
-const client = new pg.Client({ connectionString: legacyUrl });
+const client = new pg.Client(legacyConfig);
 await client.connect();
 
 const { rows } = await client.query(

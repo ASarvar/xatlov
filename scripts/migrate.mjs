@@ -12,13 +12,30 @@ import pg from 'pg';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dir = join(root, 'db', 'init');
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  console.error('DATABASE_URL belgilanmagan');
+/**
+ * Ulanish sozlamalari: DATABASE_URL yoki alohida o'zgaruvchilar.
+ * (Parolda `/`, `+`, `=` bo'lsa URL yaroqsiz bo'lib qoladi — shuning uchun ikkinchi yo'l.)
+ */
+function connectionConfig(prefix = '') {
+  const url = process.env[`${prefix}DATABASE_URL`];
+  if (url) return { connectionString: url };
+
+  const host = process.env[`${prefix}PGHOST`] ?? process.env[`${prefix}POSTGRES_HOST`];
+  const user = process.env[`${prefix}PGUSER`] ?? process.env[`${prefix}POSTGRES_USER`];
+  const database = process.env[`${prefix}PGDATABASE`] ?? process.env[`${prefix}POSTGRES_DB`];
+  const password = process.env[`${prefix}PGPASSWORD`] ?? process.env[`${prefix}POSTGRES_PASSWORD`];
+
+  if (!host || !user || !database) return null;
+  return { host, port: Number(process.env[`${prefix}PGPORT`] ?? 5432), user, password, database };
+}
+
+const config = connectionConfig();
+if (!config) {
+  console.error("Baza sozlamalari topilmadi: DATABASE_URL yoki PGHOST/POSTGRES_USER/POSTGRES_DB belgilang");
   process.exit(1);
 }
 
-const client = new pg.Client({ connectionString });
+const client = new pg.Client(config);
 
 // Baza konteyneri hali tayyor bo'lmasligi mumkin — bir necha marta urinamiz
 async function connectWithRetry(attempts = 20, delayMs = 1500) {

@@ -231,11 +231,12 @@ export async function upsertOrganisationsBulk(
   });
 }
 
-export async function healthCheck(): Promise<boolean> {
+export async function healthCheck(): Promise<{ ok: boolean; error?: string }> {
   try {
     await query('SELECT 1');
-    return true;
-  } catch {
-    return false;
+    return { ok: true };
+  } catch (err) {
+    // Sabab javobda ko'rinsin — aks holda konteyner "unhealthy" bo'ladi-yu, nega ekani noma'lum qoladi
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
   }
 }

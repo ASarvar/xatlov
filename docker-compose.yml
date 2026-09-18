@@ -36,7 +36,13 @@ services:
     environment:
       TZ: ${TZ:-Asia/Tashkent}
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-xatlov}:${POSTGRES_PASSWORD:-xatlov}@db:5432/${POSTGRES_DB:-xatlov}
+      # DATABASE_URL emas, alohida o'zgaruvchilar: parolda `/`, `+`, `=` bo'lsa
+      # URL yaroqsiz bo'lib qoladi va ilova bazaga ulana olmaydi
+      PGHOST: db
+      PGPORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-xatlov}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xatlov}
+      POSTGRES_DB: ${POSTGRES_DB:-xatlov}
       BASIC_USER: ${BASIC_USER:-xatlov}
       BASIC_PASS: ${BASIC_PASS:-change-me}
 

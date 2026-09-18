@@ -1,4 +1,4 @@
-# Ishlab chiqish rejimi (hot reload):
+# Ishlab chiqish rejimi (hot reload) — Docker Compose 2.24+ talab qiladi:
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 #
 # Image build qilinmaydi — kod bind-mount orqali konteynerga ulanadi,

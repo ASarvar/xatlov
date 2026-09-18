@@ -1,10 +1,11 @@
 # Serverdagi ishlab turuvchi (production) rejim:
-#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-# yoki oddiygina: ./scripts/deploy.sh
+#   ./scripts/deploy.sh
+# yoki: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Base faylda portlar yo'q, shuning uchun bu yerda faqat ilova porti e'lon qilinadi —
+# baza hostga UMUMAN chiqarilmaydi va serverdagi mavjud PostgreSQL bilan to'qnashmaydi.
 services:
   db:
-    # Baza faqat ichki tarmoqda — tashqi portga chiqarilmaydi
-    ports: !reset []
     restart: always
     shm_size: 256mb
     logging:
@@ -18,7 +19,7 @@ services:
     # Serverdagi port (.env dagi APP_PORT, default 9091).
     # 127.0.0.1 ga bog'lanadi — tashqariga nginx orqali chiqariladi.
     # Proxysiz, to'g'ridan-to'g'ri ochish kerak bo'lsa: BIND_HOST=0.0.0.0
-    ports: !override
+    ports:
       - "${BIND_HOST:-127.0.0.1}:${APP_PORT:-9091}:3000"
     logging:
       driver: json-file

@@ -1,3 +1,7 @@
+# Asosiy (base) konfiguratsiya. Bu yerda hostga PORT CHIQARILMAYDI:
+#   lokal portlar  -> docker-compose.override.yml (avtomatik qo'shiladi)
+#   serverdagilari -> docker-compose.prod.yml (deploy.sh qo'shadi)
+# Sabab: eski Compose (2.24 dan past) ro'yxatlarni almashtira olmaydi, faqat qo'shadi.
 services:
   db:
     image: postgres:17-alpine
@@ -8,8 +12,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-xatlov}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xatlov}
       POSTGRES_DB: ${POSTGRES_DB:-xatlov}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
       # Faqat birinchi ishga tushishda avtomatik bajariladi
@@ -37,8 +39,6 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-xatlov}:${POSTGRES_PASSWORD:-xatlov}@db:5432/${POSTGRES_DB:-xatlov}
       BASIC_USER: ${BASIC_USER:-xatlov}
       BASIC_PASS: ${BASIC_PASS:-change-me}
-    ports:
-      - "${APP_PORT:-3000}:3000"
 
 volumes:
   db-data:

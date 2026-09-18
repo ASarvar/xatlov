@@ -1,0 +1,10 @@
+# Lokal ishlab chiqish uchun portlar. `docker compose up` bu faylni AVTOMATIK qo'shadi.
+# Serverda deploy.sh fayllarni aniq ko'rsatib chaqiradi, shuning uchun bu fayl ishlatilmaydi.
+services:
+  db:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  app:
+    ports:
+      - "${APP_PORT:-3000}:3000"

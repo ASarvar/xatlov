@@ -9,7 +9,7 @@
 # bazani ko'chirish uchun: zaxira oling (scripts/backup-db.sh), DB_DATA_DIR ni yozing,
 # `docker compose down -v` qiling, qayta deploy qiling va zaxirani tiklang.
 volumes:
-  db-data: !override
+  db-data:
     driver: local
     driver_opts:
       type: none

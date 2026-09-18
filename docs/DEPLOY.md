@@ -87,8 +87,17 @@ Tekshirish:
 
 ```bash
 curl http://127.0.0.1:9091/api/health     # {"status":"ok","db":true}
-npm run smoke -- http://127.0.0.1:9091    # to'liq tekshiruv (Node o'rnatilgan bo'lsa)
 ```
+
+To'liq tekshiruv (14 ta holat). Serverdagi tizim Node'i eski bo'lishi mumkin, shuning
+uchun skriptlar **konteyner ichida** ishga tushiriladi — u yerda Node 22 bor:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml   exec -T app node scripts/smoke-test.mjs http://127.0.0.1:3000
+```
+
+> Konteyner ichida ilova `127.0.0.1:3000` da, tashqarida esa `APP_PORT` da (9091).
+> Shuning uchun ichkaridagi buyruqlarda 3000 yoziladi.
 
 ---
 
@@ -126,16 +135,26 @@ Serverda eski Express API (`/srv/api/...`) 9091-portda ishlab turibdi va uning
 ma'lumotlari **serverdagi PostgreSQL** da. Yangi tizimning bazasi esa alohida
 konteynerda, shuning uchun portni almashtirishdan oldin ma'lumotni ko'chirish kerak.
 
-**1-qadam.** Yangi ilovani vaqtincha bo'sh portda ko'taring — `.env` da `APP_PORT=9092`,
-so'ng `./scripts/deploy.sh`.
+**1-qadam.** Yangi ilova ishlab turgan bo'lsin (`./scripts/deploy.sh`).
 
 **2-qadam.** Eski bazadagi yozuvlarni ko'chiring (avval quruq yurish bilan tekshiring):
 
+Skript konteyner ichida ishlaydi, eski baza esa host mashinada — shuning uchun host
+manzili sifatida `host.docker.internal` ishlatiladi:
+
 ```bash
-export LEGACY_DATABASE_URL=postgresql://USER:PAROL@127.0.0.1:5432/ESKI_BAZA
-DRY_RUN=1 node scripts/import-from-legacy.mjs http://127.0.0.1:9092   # faqat hisobot
-node scripts/import-from-legacy.mjs http://127.0.0.1:9092              # ko'chirish
+alias dc='docker compose -f docker-compose.yml -f docker-compose.prod.yml'
+
+# 1) Faqat hisobot (hech narsa yozilmaydi)
+dc exec -T   -e LEGACY_PGHOST=host.docker.internal -e LEGACY_PGPORT=5432   -e LEGACY_PGUSER=USER -e LEGACY_PGPASSWORD=PAROL -e LEGACY_PGDATABASE=ESKI_BAZA   -e DRY_RUN=1   app node scripts/import-from-legacy.mjs http://127.0.0.1:3000
+
+# 2) Ko'chirish (DRY_RUN siz)
+dc exec -T   -e LEGACY_PGHOST=host.docker.internal -e LEGACY_PGPORT=5432   -e LEGACY_PGUSER=USER -e LEGACY_PGPASSWORD=PAROL -e LEGACY_PGDATABASE=ESKI_BAZA   app node scripts/import-from-legacy.mjs http://127.0.0.1:3000
 ```
+
+> Host'dagi PostgreSQL konteynerdan kelgan ulanishni qabul qilishi kerak. "no
+> pg_hba.conf entry" xatosi chiqsa, `pg_hba.conf` ga docker tarmog'i uchun ruxsat
+> qo'shing (masalan `host all all 172.16.0.0/12 md5`) va `systemctl reload postgresql`.
 
 Skript STIR bo'yicha upsert qiladi — qayta ishga tushirsa ham takrorlanmaydi. STIR formati
 noto'g'ri (9 xonali emas) yozuvlarni o'tkazib yuboradi va ro'yxatini chiqaradi.
@@ -143,7 +162,7 @@ noto'g'ri (9 xonali emas) yozuvlarni o'tkazib yuboradi va ro'yxatini chiqaradi.
 **3-qadam.** Ma'lumot to'g'ri ko'chganini tekshiring:
 
 ```bash
-curl -u USER:PAROL 'http://127.0.0.1:9092/api/organisations?limit=5'
+curl -u USER:PAROL 'http://127.0.0.1:9091/api/organisations?limit=5'
 ```
 
 **4-qadam.** Eski xizmatni to'xtating. Avval qanday ishga tushirilganini aniqlang:
@@ -225,6 +244,8 @@ Qulaylik uchun alias qo'shing: `alias dc='docker compose -f docker-compose.yml -
 | To'xtatish | `dc stop` |
 | Migratsiyani qo'llash | `dc exec app node scripts/migrate.mjs` |
 | Bazaga kirish | `dc exec db psql -U xatlov -d xatlov` |
+| Tekshiruv (smoke) | `dc exec -T app node scripts/smoke-test.mjs http://127.0.0.1:3000` |
+| Fayldan import | `dc exec -T app node scripts/import-organisations.mjs data/fayl.json http://127.0.0.1:3000` |
 | Resurslar | `docker stats --no-stream` |
 
 ---

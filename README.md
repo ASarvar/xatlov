@@ -84,6 +84,13 @@ docker compose exec db psql -U xatlov -d xatlov -c "SELECT id, tin, org_name, st
 docker compose exec db psql -U xatlov -d xatlov -c "SELECT * FROM sync_runs ORDER BY id DESC LIMIT 5;"
 ```
 
+Serverda (yoki tizim Node'i eski bo'lgan mashinada) skriptlarni konteyner ichida
+ishga tushiring — u yerda Node 22 bor:
+
+```bash
+docker compose exec -T app node scripts/smoke-test.mjs http://127.0.0.1:3000
+```
+
 Namuna ma'lumot yuklash va natijani UI da ko'rish:
 
 ```bash

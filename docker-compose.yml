@@ -45,6 +45,10 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-xatlov}
       BASIC_USER: ${BASIC_USER:-xatlov}
       BASIC_PASS: ${BASIC_PASS:-change-me}
+    # Konteyner ichidan host mashinadagi xizmatlarga (masalan eski PostgreSQL ga)
+    # murojaat qilish uchun: host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   db-data:

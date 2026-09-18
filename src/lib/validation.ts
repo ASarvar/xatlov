@@ -5,7 +5,7 @@ const nullableText = z.string().trim().max(255).nullish();
 
 export const organisationInputSchema = z.object({
   typeid: optionalInt,
-  source_id: nullableText,
+  source_id: optionalInt,
   org_name: z.string().trim().min(1, "org_name bo'sh bo'lishi mumkin emas").max(1000),
   region_id: optionalInt,
   district_id: optionalInt,
@@ -14,7 +14,7 @@ export const organisationInputSchema = z.object({
     .transform((v) => String(v).trim())
     .refine((v) => /^\d{9}$/.test(v), 'tin 9 xonali raqam bo\'lishi kerak'),
   state: z.coerce.number().int().refine((v) => v === 0 || v === 1, 'state faqat 0 yoki 1').default(1),
-  soato: nullableText,
+  soato: optionalInt,
 });
 
 /** Yangilashda barcha maydonlar ixtiyoriy, lekin kamida bittasi bo'lishi shart. */

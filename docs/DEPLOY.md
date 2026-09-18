@@ -120,6 +120,57 @@ sudo ufw allow 9091/tcp
 
 ---
 
+## 5a. Eski API o'rnini egallash (9091-port)
+
+Serverda eski Express API (`/srv/api/...`) 9091-portda ishlab turibdi va uning
+ma'lumotlari **serverdagi PostgreSQL** da. Yangi tizimning bazasi esa alohida
+konteynerda, shuning uchun portni almashtirishdan oldin ma'lumotni ko'chirish kerak.
+
+**1-qadam.** Yangi ilovani vaqtincha bo'sh portda ko'taring — `.env` da `APP_PORT=9092`,
+so'ng `./scripts/deploy.sh`.
+
+**2-qadam.** Eski bazadagi yozuvlarni ko'chiring (avval quruq yurish bilan tekshiring):
+
+```bash
+export LEGACY_DATABASE_URL=postgresql://USER:PAROL@127.0.0.1:5432/ESKI_BAZA
+DRY_RUN=1 node scripts/import-from-legacy.mjs http://127.0.0.1:9092   # faqat hisobot
+node scripts/import-from-legacy.mjs http://127.0.0.1:9092              # ko'chirish
+```
+
+Skript STIR bo'yicha upsert qiladi — qayta ishga tushirsa ham takrorlanmaydi. STIR formati
+noto'g'ri (9 xonali emas) yozuvlarni o'tkazib yuboradi va ro'yxatini chiqaradi.
+
+**3-qadam.** Ma'lumot to'g'ri ko'chganini tekshiring:
+
+```bash
+curl -u USER:PAROL 'http://127.0.0.1:9092/api/organisations?limit=5'
+```
+
+**4-qadam.** Eski xizmatni to'xtating. Avval qanday ishga tushirilganini aniqlang:
+
+```bash
+ps -o pid,ppid,cmd -p $(ss -lntp | grep ':9091' | grep -oP 'pid=\K[0-9]+' | head -1)
+systemctl list-units --type=service --state=running | grep -iE 'api|organ|node'
+pm2 list 2>/dev/null
+```
+
+So'ng mos usulda to'xtating va qayta ishga tushmasligini ta'minlang:
+
+| Qanday ishlayapti | To'xtatish |
+|---|---|
+| systemd xizmati | `sudo systemctl stop NOMI && sudo systemctl disable NOMI` |
+| pm2 | `pm2 stop NOMI && pm2 delete NOMI && pm2 save` |
+| oddiy jarayon | `kill PID` (autostart bo'lsa, cron/rc.local ni ham tekshiring) |
+
+**5-qadam.** Portni yangi ilovaga bering: `.env` da `APP_PORT=9091`, so'ng
+`./scripts/deploy.sh`. Nginx eski xizmatga yo'naltirilgan bo'lsa, `proxy_pass` manzilini
+ham yangilang.
+
+> Eski xizmat kodini va bazasini darhol o'chirmang — bir necha kun zaxira sifatida
+> qolsin. Eski bazadan yangi yozuvlar kelib tushmayotganiga ishonch hosil qilgach o'chirasiz.
+
+---
+
 ## 6. Yangilash
 
 ```bash

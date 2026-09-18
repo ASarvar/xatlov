@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "db:migrate": "node --env-file-if-exists=.env scripts/migrate.mjs",
     "smoke": "node --env-file-if-exists=.env scripts/smoke-test.mjs",
-    "import": "node --env-file-if-exists=.env scripts/import-organisations.mjs"
+    "import": "node --env-file-if-exists=.env scripts/import-organisations.mjs",
+    "import:legacy": "node --env-file-if-exists=.env scripts/import-from-legacy.mjs"
   },
   "dependencies": {
     "next": "16.3.5",

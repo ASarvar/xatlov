@@ -146,7 +146,9 @@ Barcha endpointlar (`/api/health` dan tashqari) **Basic auth** bilan himoyalanga
 | `POST` | `/api/organisations/bulk` | **ommaviy upsert** (5000 tagacha yozuv) + natija statistikasi |
 | `GET` | `/api/sync-runs` | yuklash sessiyalari tarixi |
 
-Tayyor so'rovlar to'plami: [`docs/api.http`](docs/api.http).
+Tayyor so'rovlar to'plami: [`docs/api.http`](docs/api.http) (VS Code / JetBrains HTTP Client).
+Postman uchun kolleksiya va muhit fayllari: [`docs/postman/`](docs/postman/README.md) —
+barcha modullar, testlari bilan, Collection Runner'da bir tugmada ishlaydi.
 
 ### Misollar
 

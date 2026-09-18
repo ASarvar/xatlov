@@ -148,6 +148,10 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml exec -T app node
 Test yozuvlari `999000001` va `999000002` STIR'laridan foydalanadi va oxirida nofaol
 qilinadi — skriptni xohlagancha qayta ishga tushirsa bo'ladi.
 
+Postman orqali qo'lda tekshirish kerak bo'lsa, tayyor kolleksiya: [`docs/postman/`](postman/README.md).
+Server ilovasi `127.0.0.1` ga bog'langani uchun o'z kompyuteringizdan SSH tunnel oching:
+`ssh -L 9091:127.0.0.1:9091 root@markazsrv`.
+
 > Image ichida faqat `scripts/`, `db/` va ilovaning o'zi bor. Serverda JSON fayldan
 > import qilish kerak bo'lsa, faylni avval konteynerga nusxalang:
 > `dc cp organisations.json app:/tmp/import.json`.
